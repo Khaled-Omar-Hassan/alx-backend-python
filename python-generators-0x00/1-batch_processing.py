@@ -1,7 +1,7 @@
 import seed
 
 def stream_users_in_batches(batch_size):
-  with seed.connect_db as connection:
+  with seed.connect_db() as connection:
     seed.connect_to_prodev(connection)
     seed.create_database(connection)
     seed.create_table(connection)
@@ -18,5 +18,7 @@ def stream_users_in_batches(batch_size):
 def batch_processing(batch_size):
   for batch in stream_users_in_batches(batch_size):
     for row in batch:
-      if int(row.str.split(',')[-1]) > 25:
+      if int(row[-1]) > 25:
         yield row
+
+  return
