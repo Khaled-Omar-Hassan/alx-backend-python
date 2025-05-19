@@ -2,25 +2,25 @@ import sqlite3
 import functools
 
 """your code goes here"""
-
 def with_db_connection(func):
-  @functools.wraps(func)
-  def wrapper(*args, **kwargs):
-    db = sqlite3.connect("ALX_prodev")
-    func(db, *args, **kwargs)
-    db.close()
-  return wrapper
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+      db = sqlite3.connect("ALX_prodev.db")
+      result = func(db, *args, **kwargs)
+      db.close()
+      return result
+    return wrapper
 
 
-def transactional(func):
-  @functools.wraps(func)
-  def wrapper(*args, **kwargs):
-    try:
-      func(*args, **kwargs)
-    except:
-      args[0].rollback()
-
-  return wrapper
+ def wrapper(conn, *args, **kwargs):
+        try:
+            result = func(conn, *args, **kwargs)
+            conn.commit() 
+            return result
+        except Exception as e:
+            conn.rollback() 
+            raise e  
+        return wrapper
       
     
 
