@@ -2,12 +2,12 @@ import sqlite3
 import functools
 
 def with_db_connection(func):
-    """ your code goes here""" 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-      db = sqlite3.connect("ALX_prodev")
-      func(db, *args, **kwargs)
+      db = sqlite3.connect("ALX_prodev.db")
+      result = func(db, *args, **kwargs)
       db.close()
+      return result
     return wrapper
 @with_db_connection 
 def get_user_by_id(conn, user_id): 
