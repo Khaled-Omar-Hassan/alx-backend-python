@@ -13,17 +13,19 @@ def with_db_connection(func):
       return result
     return wrapper
 
-def retry_on_failure(func, retries, delay):
-  @functools.wraps(func)
-  def wrapper(*args, **kwargs):
-    for i in range(retries):
-      try:
-        func(*args, **kwargs)
-        break
-      except:
-        time.sleep(delay)
-    raise 
-  return wrapper
+def retry_on_failure(retries, delay):
+  def decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+      for i in range(retries):
+        try:
+          result = func(*args, **kwargs)
+          return result
+        except:
+          time.sleep(delay)
+      raise RuntimeError("Failed after all retries")
+    return wrapper
+  return decorator
 
 
 @with_db_connection
