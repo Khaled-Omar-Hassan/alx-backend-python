@@ -4,13 +4,13 @@ import functools
 
 #### paste your with_db_decorator here
 
-""" your code goes here"""
 def with_db_connection(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-      db = sqlite3.connect("ALX_prodev")
-      func(db, *args, **kwargs)
+      db = sqlite3.connect("ALX_prodev.db")
+      result = func(db, *args, **kwargs)
       db.close()
+      return result
     return wrapper
 
 def retry_on_failure(func, retries, delay):
