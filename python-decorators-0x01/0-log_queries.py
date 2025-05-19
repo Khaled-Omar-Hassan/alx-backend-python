@@ -1,27 +1,28 @@
 import sqlite3
 import functools
-import time
-import logging
+from datetime import datetime
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(message)s')
-
+# Decorator to log SQL queries and execution time using print and datetime
 def log_queries(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         query = kwargs.get('query') if 'query' in kwargs else args[0] if args else None
+        start_time = datetime.now()
+        
         if query:
-            logging.info(f"Executing query: {query}")
+            print(f"[{start_time}] Executing query: {query}")
         else:
-            logging.info("No SQL query provided.")
+            print(f"[{start_time}] No SQL query provided.")
 
-        start_time = time.time()
         try:
             result = func(*args, **kwargs)
-            duration = time.time() - start_time
-            logging.info(f"Query executed in {duration:.4f} seconds")
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            print(f"[{end_time}] Query executed in {duration:.4f} seconds")
             return result
         except Exception as e:
-            logging.error(f"Error while executing query: {e}")
+            error_time = datetime.now()
+            print(f"[{error_time}] Error executing query: {e}")
             raise
     return wrapper
 
@@ -34,5 +35,5 @@ def fetch_all_users(query):
     conn.close()
     return results
 
-# Fetch users while logging the query and time taken
+# Fetch users while logging the query and execution time
 users = fetch_all_users(query="SELECT * FROM users")
