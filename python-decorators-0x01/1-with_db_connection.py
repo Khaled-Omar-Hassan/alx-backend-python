@@ -7,6 +7,7 @@ def with_db_connection(func):
     def wrapper(*args, **kwargs):
       db = sqlite3.connect("ALX_prodev")
       func(db, *args, **kwargs)
+      db.close()
     return wrapper
 @with_db_connection 
 def get_user_by_id(conn, user_id): 
