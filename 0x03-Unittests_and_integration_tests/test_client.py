@@ -16,8 +16,8 @@ class TestGithubOrgClient(unittest.TestCase):
         request_mock.return_value = {"login": org}
         obj = GithubOrgClient(org)
         self.assertEqual(obj.org, {"login": org})
-        request_mock.assert_called_once_with(obj.ORG_URL.format(org=org))
+        request_mock.assert_called_once_with(
+            obj.ORG_URL.format(org=org))
 
 
-if __name__ == "__main__":
-    unittest.main()
+unittest.main()
