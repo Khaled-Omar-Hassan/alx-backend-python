@@ -10,26 +10,20 @@ from client import GithubOrgClient
 class TestGithubOrgClient(unittest.TestCase):
     """Test suite for GithubOrgClient class."""
 
-    @patch("client.get_json")
     @parameterized.expand([
         ("google",),
         ("abc",),
     ])
-    def test_org(self, mock_get_json, org):
-        """Test that GitHubOrgClient.org returns the expected dict and calls get_json once."""
-        # Arrange: make get_json pretend to return {"login": org}
-        mock_get_json.return_value = {"login": org}
-
-        # Act: instantiate and access the .org property
+    @patch("client.get_json")
+    def test_org(self, org, mock_get_json):
+        """Test that org method returns the correct org."""
+        expected = {"login": org}
+        mock_get_json.return_value = expected
         client = GithubOrgClient(org)
-        result = client.org  # <-- this calls get_json(...) behind the scenes
-
-        # Assert: .org must return the same dict
-        self.assertEqual(result, {"login": org})
-
-        # And get_json must have been called exactly once with the correct URL
-        expected_url = GithubOrgClient.ORG_URL.format(org=org)
-        mock_get_json.assert_called_once_with(expected_url)
+        self.assertEqual(client.org, expected)
+        mock_get_json.assert_called_once_with(
+            GithubOrgClient.ORG_URL.format(org=org)
+        )
 
 
 if __name__ == "__main__":
