@@ -20,4 +20,5 @@ class TestGithubOrgClient(unittest.TestCase):
             obj.ORG_URL.format(org=org))
 
 
-unittest.main()
+if __name__ == "__main__":
+    unittest.main()
