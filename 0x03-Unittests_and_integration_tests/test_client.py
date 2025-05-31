@@ -9,16 +9,17 @@ import client
 
 class TestGithubOrgClient(unittest.TestCase):
     @parameterized.expand([
-        ("google",),
-        ("abc",),
+        ("case_google", "google", {"login": "google", "id": 1}),
+        ("case_abc", "abc", {"login": "abc", "id": 2})
     ])
-    @patch.object(client, "get_json")
-    def test_org(self,  org, mock_get_json):
-        mock_get_json.return_value = {"login": org}
-        client_instance = client.GithubOrgClient(org)
-        self.assertEqual(client_instance.org, {"login": org})
+    @patch("client.get_json")
+    def test_org(self, _, org_name, expected_response, mock_get_json):
+        """Test that GithubOrgClient.org returns the expected org data."""
+        mock_get_json.return_value = expected_response
+        client = GithubOrgClient(org_name)
+        self.assertEqual(client.org(), expected_response)
         mock_get_json.assert_called_once_with(
-            client.GithubOrgClient.ORG_URL.format(org=org)
+            f"https://api.github.com/orgs/{org_name}"
         )
 
     def test_public_repos_url(self):
