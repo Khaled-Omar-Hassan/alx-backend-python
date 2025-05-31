@@ -4,7 +4,7 @@
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized
-import client  # Import whole module for safer patching
+import client
 
 
 class TestGithubOrgClient(unittest.TestCase):
