@@ -4,25 +4,21 @@
 import unittest
 from unittest.mock import patch
 from parameterized import parameterized
-from client import GithubOrgClient
+import client  # Import whole module for safer patching
 
 
 class TestGithubOrgClient(unittest.TestCase):
-    """Test suite for GithubOrgClient class."""
-
     @parameterized.expand([
         ("google",),
         ("abc",),
     ])
-    @patch("client.get_json")
-    def test_org(self, org, mock_get_json):
-        """Test that org method returns the correct org."""
-        expected = {"login": org}
-        mock_get_json.return_value = expected
-        client = GithubOrgClient(org)
-        self.assertEqual(client.org, expected)
+    @patch.object(client, "get_json")
+    def test_org(self,  org, mock_get_json):
+        mock_get_json.return_value = {"login": org}
+        client_instance = client.GithubOrgClient(org)
+        self.assertEqual(client_instance.org, {"login": org})
         mock_get_json.assert_called_once_with(
-            GithubOrgClient.ORG_URL.format(org=org)
+            client.GithubOrgClient.ORG_URL.format(org=org)
         )
 
 
