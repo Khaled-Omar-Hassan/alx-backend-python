@@ -9,15 +9,21 @@ from client import GithubOrgClient
 
 class TestGithubOrgClient(unittest.TestCase):
     """Test suite for GithubOrgClient class."""
-    @parameterized.expand([("google",), ("abc",)])
+
+    @parameterized.expand([
+        ("google",),
+        ("abc",),
+    ])
     @patch("client.get_json")
-    def test_org(self, org, request_mock):
+    def test_org(self, org, mock_get_json):
         """Test that org method returns the correct org."""
-        request_mock.return_value = {"login": org}
-        obj = GithubOrgClient(org)
-        self.assertEqual(obj.org, {"login": org})
-        request_mock.assert_called_once_with(
-            obj.ORG_URL.format(org=org))
+        expected = {"login": org}
+        mock_get_json.return_value = expected
+        client = GithubOrgClient(org)
+        self.assertEqual(client.org, expected)
+        mock_get_json.assert_called_once_with(
+            GithubOrgClient.ORG_URL.format(org=org)
+        )
 
 
 if __name__ == "__main__":
