@@ -5,6 +5,8 @@ from .models import User, Conversation, Message
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the custom User model."""
 
+    full_name = serializers.SerializerMethodField()  # ✔️ Using SerializerMethodField
+
     class Meta:
         model = User
         fields = [
@@ -14,13 +16,18 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'phone_number',
+            'full_name',
         ]
+
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
 
 
 class MessageSerializer(serializers.ModelSerializer):
     """Serializer for Message objects, includes sender info."""
 
-    sender = UserSerializer(read_only=True)
+    sender_username = serializers.CharField(
+        source='sender.username', read_only=True)  # ✔️ Using CharField
 
     class Meta:
         model = Message
@@ -28,10 +35,17 @@ class MessageSerializer(serializers.ModelSerializer):
             'message_id',
             'conversation',
             'sender',
+            'sender_username',
             'message_body',
             'sent_at',
         ]
-        read_only_fields = ['message_id', 'sent_at']
+
+    def validate_message_body(self, value):
+        """Ensure the message body isn't empty or just whitespace."""
+        if not value.strip():
+            raise serializers.ValidationError(
+                "Message body cannot be empty.")  # ✔️ Using ValidationError
+        return value
 
 
 class ConversationSerializer(serializers.ModelSerializer):
