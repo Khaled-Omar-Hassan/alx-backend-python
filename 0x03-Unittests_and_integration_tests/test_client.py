@@ -108,7 +108,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             client_instance.public_repos(license="apache-2.0"),
             self.apache2_repos,
         )
-        
+
     def test_public_repos(self):
         """Test public_repos returns correct list of repo names."""
         client_instance = GithubOrgClient("google")
