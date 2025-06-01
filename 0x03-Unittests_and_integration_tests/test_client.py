@@ -67,7 +67,8 @@ class TestGithubOrgClient(unittest.TestCase):
         "expected_repos": expected_repos,
         "apache2_repos": apache2_repos,
     }
-    for org_payload, repos_payload, expected_repos, apache2_repos in TEST_PAYLOAD
+    for org_payload, repos_payload, expected_repos,
+    apache2_repos in TEST_PAYLOAD
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
@@ -107,6 +108,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
             client_instance.public_repos(license="apache-2.0"),
             self.apache2_repos,
         )
+        
     def test_public_repos(self):
         """Test public_repos returns correct list of repo names."""
         client_instance = GithubOrgClient("google")
@@ -118,7 +120,6 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         client_instance = GithubOrgClient("google")
         repos = client_instance.public_repos(license="apache-2.0")
         self.assertEqual(repos, self.apache2_repos)
-
 
 
 if __name__ == "__main__":
