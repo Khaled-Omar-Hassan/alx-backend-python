@@ -7,6 +7,8 @@ class User(AbstractUser):
     """Custom User model with additional fields."""
     user_id = models.UUIDField(
         default=uuid.uuid4, unique=True, editable=False, primary_key=True)
+    password = models.CharField(max_length=128)
+
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 
