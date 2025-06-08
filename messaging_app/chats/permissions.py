@@ -1,0 +1,1 @@
+from rest_framework.Permissions import BasePermission
