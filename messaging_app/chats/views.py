@@ -4,13 +4,14 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Conversation, Message, User
 from .serializers import ConversationSerializer, MessageSerializer
+from .permissions import IsParticipantOfConversation
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
     """ViewSet for listing and creating conversations."""
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsParticipantOfConversation]
 
     def get_queryset(self):
         # Only show conversations the user is part of
@@ -43,7 +44,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     """ViewSet for listing and sending messages in a conversation."""
     serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
 
     def get_queryset(self):
         """Filter messages by conversation ID passed in query params."""
