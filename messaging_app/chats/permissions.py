@@ -1,1 +1,2 @@
-from rest_framework.Permissions import BasePermission
+from rest_framework import Permissions
+from rest_framework.permissions import BasePermission, IsAuthenticated
