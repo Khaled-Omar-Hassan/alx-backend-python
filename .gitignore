@@ -8,7 +8,6 @@ build/
 
 # Django
 *.sqlite3
-*.log
 *.pot
 *.pyc
 db.sqlite3
