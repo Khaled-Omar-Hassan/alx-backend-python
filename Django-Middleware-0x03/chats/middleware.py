@@ -1,6 +1,12 @@
 import logging
 from datetime import datetime
 
+logging.basicConfig(
+    filename='requests.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
+
 
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
@@ -10,12 +16,7 @@ class RequestLoggingMiddleware:
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-        logging.basicConfig(
-            filename='requests.log',
-            level=logging.INFO,
-
-            format=f"{datetime.now()} - User: {request.user.id} - Path: {request.path}"
-        )
+        logging.info(f"User: {request.user.id}")
         response = self.get_response(request)
 
         # Code to be executed for each request/response after
