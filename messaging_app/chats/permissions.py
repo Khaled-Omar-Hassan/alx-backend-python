@@ -1,17 +1,29 @@
-from rest_framework import permissions
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import BasePermission
 
 
 class IsParticipantOfConversation(BasePermission):
     """
-    Object-level permission to only allow owners of an object to edit it.
-    Assumes the model instance has an `owner` attribute.
+    Allows only participants of a conversation to perform actions on messages.
+    All logic is handled in has_object_permission, including authentication and method checks.
     """
 
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
     def has_object_permission(self, request, view, obj):
-        if not request.user or not request.user.is_authenticated:
-            # If the user is authenticated, check if they are a participant
-            return False
-        # Instance must have an attribute named `owner`.
         conversation = getattr(obj, 'conversation', obj)
-        return request.user in conversation.participants.all()
+
+        is_participant = request.user in conversation.participants.all()
+        if not is_participant:
+            return False
+
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:  # View messages
+            return True
+        elif request.method == 'POST':  # Send message
+            return True
+        elif request.method in ['PUT', 'PATCH']:  # Edit message
+            return True
+        elif request.method == 'DELETE':  # Delete message
+            return True
+
+        return False
