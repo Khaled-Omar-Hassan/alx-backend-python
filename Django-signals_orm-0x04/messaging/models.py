@@ -11,7 +11,7 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     edited = models.BooleanField(default=False)
-    read = models.BooleanField(default=False)
+    unread = models.BooleanField(default=False)
 
     parent_message = models.ForeignKey(
         'self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE
