@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from .models import Message
 from django.db.models import Prefetch
+from django.views.decorators.cache import cache_page
+from django.db import models
 
 
 @login_required
@@ -49,3 +51,15 @@ def unread_inbox(request):
         'id', 'content', 'timestamp', 'sender__username'
     )
     return render(request, 'messaging/inbox.html', {'messages': unread_msgs})
+
+
+@cache_page(60)  # Cache timeout set to 60 seconds
+def conversation_view(request, user_id):
+    other_user = get_object_or_404(User, pk=user_id)
+    messages = Message.objects.filter(
+        (models.Q(sender=request.user, receiver=other_user) |
+         models.Q(sender=other_user, receiver=request.user)),
+        parent_message__isnull=True
+    ).select_related('sender', 'receiver').order_by('timestamp')
+
+    return render(request, 'messaging/conversation.html', {'messages': messages, 'other_user': other_user})
