@@ -1,8 +1,6 @@
-from .models import Message, MessageHistory
-from django.db.models.signals import pre_save
-from django.db.models.signals import post_save
+from .models import Message, MessageHistory, Notification
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
-from .models import Message, Notification
 
 
 @receiver(post_save, sender=Message)
@@ -28,3 +26,15 @@ def track_message_edit(sender, instance, **kwargs):
                 instance.edited = True
         except Message.DoesNotExist:
             pass
+
+
+@receiver(post_delete, sender=User)
+def cleanup_user_related_data(sender, instance, **kwargs):
+    messages = Message.objects.filter(
+        sender=instance) | Message.objects.filter(receiver=instance)
+    for msg in messages:
+        MessageHistory.objects.filter(message=msg).delete()
+        Notification.objects.filter(message=msg).delete()
+        msg.delete()
+
+    Notification.objects.filter(user=instance).delete()
