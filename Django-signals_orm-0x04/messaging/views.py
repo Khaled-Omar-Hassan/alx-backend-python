@@ -45,7 +45,7 @@ def get_threaded_inbox(request):
 
 def unread_inbox(request):
     user = request.user
-    unread_msgs = Message.unread.for_user(user).select_related('sender').only(
+    unread_msgs = Message.unread.unread_for_user(user).select_related('sender').only(
         'id', 'content', 'timestamp', 'sender__username'
     )
     return render(request, 'messaging/inbox.html', {'messages': unread_msgs})
