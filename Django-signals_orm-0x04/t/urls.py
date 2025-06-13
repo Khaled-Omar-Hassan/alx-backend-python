@@ -17,7 +17,10 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from messaging import views
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('delete-account/', views.delete_user, name='delete_user'),
 ]

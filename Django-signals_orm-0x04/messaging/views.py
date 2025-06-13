@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
 
-# Create your views here.
+
+@login_required
+def delete_user(request):
+    user = request.user
+    logout(request)
+    user.delete()
+    return redirect('')
