@@ -41,3 +41,11 @@ def build_message_thread(message):
 def get_threaded_inbox(request):
     root_messages = get_user_inbox(request.useruser)
     return [build_message_thread(msg) for msg in root_messages]
+
+
+def unread_inbox(request):
+    user = request.user
+    unread_msgs = Message.unread.for_user(user).select_related('sender').only(
+        'id', 'content', 'timestamp', 'sender__username'
+    )
+    return render(request, 'messaging/inbox.html', {'messages': unread_msgs})
