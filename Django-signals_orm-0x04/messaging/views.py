@@ -14,8 +14,8 @@ def delete_user(request):
     return redirect('')
 
 
-def get_user_inbox(user):
-    root_messages = Message.objects.filter(receiver=user, parent_message__isnull=True) \
+def get_user_inbox(request):
+    root_messages = Message.objects.filter(receiver=request.user, parent_message__isnull=True, sender=request.user) \
         .select_related('sender') \
         .prefetch_related(
             Prefetch('replies', queryset=Message.objects.select_related(
@@ -38,6 +38,6 @@ def build_message_thread(message):
     return thread
 
 
-def get_threaded_inbox(user):
-    root_messages = get_user_inbox(user)
+def get_threaded_inbox(request):
+    root_messages = get_user_inbox(request.useruser)
     return [build_message_thread(msg) for msg in root_messages]
