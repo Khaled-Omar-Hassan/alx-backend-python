@@ -22,7 +22,8 @@ def track_message_edit(sender, instance, **kwargs):
             if old_message.content != instance.content:
                 MessageHistory.objects.create(
                     message=instance,
-                    old_content=old_message.content
+                    old_content=old_message.content,
+                    edited_by=instance.sender
                 )
                 instance.edited = True
         except Message.DoesNotExist:
