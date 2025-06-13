@@ -44,6 +44,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@cache_page(60)
 class MessageViewSet(viewsets.ModelViewSet):
     """ViewSet for listing and sending messages in a conversation."""
     serializer_class = MessageSerializer
