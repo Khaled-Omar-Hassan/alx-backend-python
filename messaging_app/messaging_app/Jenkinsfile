@@ -1,0 +1,87 @@
+pipeline {
+    agent any
+
+    tools {
+        python 'Python3'
+    }
+
+    environment {
+        VENV = 'venv'
+        IMAGE_NAME = 'yohannesabesheger/messaging_app'
+        TAG = 'latest'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git credentialsId: 'github-creds', url: 'https://github.com/Yohannesabesheger/alx-backend-python.git'
+            }
+        }
+
+        stage('Display Git Branch') {
+            steps {
+                sh '''
+                cd messaging_app
+                echo "Current Git Branch:"
+                git branch
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                cd messaging_app
+                python3 -m venv $VENV
+                . $VENV/bin/activate
+                pip3 install --upgrade pip
+                pip3 install -r messaging_app/requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh '''
+                cd messaging_app
+                . $VENV/bin/activate
+                pytest --junitxml=report.xml
+                '''
+            }
+        }
+
+        stage('Archive Test Results') {
+            steps {
+                junit 'messaging_app/report.xml'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                cd messaging_app
+                docker build -t $IMAGE_NAME:$TAG .
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push $IMAGE_NAME:$TAG
+                    docker logout
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            sh 'rm -rf venv'
+        }
+    }
+}
